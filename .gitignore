@@ -1,4 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitignore
 .idea/
-data/
+/data/ca/
+/data/qa/
+/data/stanford-corenlp-full-2018-10-05/
