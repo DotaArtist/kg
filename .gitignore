@@ -4,3 +4,9 @@
 /data/ca/
 /data/qa/
 /data/stanford-corenlp-full-2018-10-05/
+!/data/ca/task3_train.txt
+!/data/ca/task3_train_1k.txt
+!/data/ca/task3_train_train.txt
+!/data/ca/task3_train_test.txt
+!/data/ca/task3_train_shuf.txt
+src/__pycache__/
