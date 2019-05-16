@@ -7,11 +7,12 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from sklearn.utils import shuffle
-from ber_pre_train import BertPreTrain
+from bert_pre_train import BertPreTrain
 
 
 class DataProcess(object):
     def __init__(self):
+        self.bert_batch_size = 32
         self.batch_size = 32
         self.data_path = None
         self.data = None
@@ -23,8 +24,8 @@ class DataProcess(object):
         self.data_path = file_list
         data = pd.DataFrame()
         for i in file_list:
-            data_tmp = pd.read_excel(i, header=0)
-            data_tmp.columns = ["pid", "label", "content"]
+            data_tmp = pd.read_csv(open(i, encoding='utf-8'), header=0, sep='\t', engine='c', error_bad_lines=False)
+            data_tmp.columns = ["sentence_1", "sentence_2", "label"]
 
             data = pd.concat([data, data_tmp])
 
@@ -34,25 +35,21 @@ class DataProcess(object):
     def get_feature(self):
         data_x = []
         data_y = []
+
+        _counter = 1
+        _sentence_pair_list = []
         for index, row in tqdm(self.data.iterrows()):
-            try:
-                data_x.append(list(self.bert_model.get_output([str(row['content'])])[0]))
-                if int(row['label']) == 1:
-                    data_y.append([0, 1])
-                elif int(row['label']) == 0:
-                    data_y.append([1, 0])
 
-            except TypeError:
-                print(row['content'])
+            if _counter % 32 == 0:
+                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list)))
+            else:
+                _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+                _sentence_pair_list.append(_sentence_pair)
 
-            except UnicodeEncodeError:
-                _ = row['content'].encode('utf-8').strip()
-                print(_)
-                data_x.append(list(self.bert_model.get_output([_])[0]))
-                if int(row['label']) == 1:
-                    data_y.append([0, 1])
-                elif int(row['label']) == 0:
-                    data_y.append([1, 0])
+            if int(row['label']) == 1:
+                data_y.append([0, 1])
+            elif int(row['label']) == 0:
+                data_y.append([1, 0])
 
         self.data_x = data_x
         self.data_y = data_y
@@ -77,12 +74,7 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../../data_v2/标注_买手聊天_训练.xlsx',
-                 '../../data_v2/标注_补充.xlsx',
-                 '../../data_v2/标注_商品描述_短句训练正.xlsx',
-                 '../../data_v2/标注_商品描述_短句训练负_5w.xlsx',
-                 '../../data_v2/标注_商品描述_短句训练负_10w.xlsx',
-                 '../../data_v2/04_message_train.xlsx',
+    data_list = ['../data/ca/task3_train.txt',
                  ]
 
     a = DataProcess()

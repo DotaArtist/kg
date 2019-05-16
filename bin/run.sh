@@ -19,3 +19,6 @@ docker build -t bert-as-service -f ./Dockerfile .
 NUM_WORKER=1
 PATH_MODEL=/data/yp/chinese_L-12_H-768_A-12/
 docker run --runtime nvidia -dit -p 5555:5555 -p 5556:5556 -v $PATH_MODEL:/model -t bert-as-service $NUM_WORKER
+
+# ca
+bert-serving-start -show_tokens_to_client $true -port 5555 -port_out 5556 -pooling_strategy CLS_TOKEN -max_seq_len 200 -model_dir ./chinese_L-12_H-768_A-12/ -num_worker=1
