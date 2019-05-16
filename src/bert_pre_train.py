@@ -8,9 +8,9 @@ class BertPreTrain(object):
     def __init__(self):
         self.model = BertClient(ip='172.17.21.16', port=5555)
 
-    def get_output(self, sentence):
+    def get_output(self, sentence, _show_tokens=True):
         try:
-            return self.model.encode(sentence, show_tokens=True)
+            return self.model.encode(sentence, show_tokens=_show_tokens)
         except TypeError:
             print("sentence must be list！")
 

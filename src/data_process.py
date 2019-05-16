@@ -11,10 +11,11 @@ from bert_pre_train import BertPreTrain
 
 
 class DataProcess(object):
-    def __init__(self):
-        self.bert_batch_size = 32
+    def __init__(self, _show_token=False):
+        self.bert_batch_size = 8
         self.batch_size = 32
         self.data_path = None
+        self.show_token = _show_token
         self.data = None
         self.bert_model = BertPreTrain()
         self.data_x = None
@@ -38,18 +39,31 @@ class DataProcess(object):
 
         _counter = 1
         _sentence_pair_list = []
+        _data_y_list = []
         for index, row in tqdm(self.data.iterrows()):
 
             if _counter % 32 == 0:
-                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list)))
-            else:
-                _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
-                _sentence_pair_list.append(_sentence_pair)
+                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+                data_y.extend(_data_y_list)
 
-            if int(row['label']) == 1:
-                data_y.append([0, 1])
-            elif int(row['label']) == 0:
-                data_y.append([1, 0])
+                _sentence_pair_list = []
+                _data_y_list = []
+                _counter = 1
+            else:
+                try:
+                    if int(row['label']) == 1:
+                        _data_y_list.append([0, 1])
+                    elif int(row['label']) == 0:
+                        _data_y_list.append([1, 0])
+
+                    _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+                    _sentence_pair_list.append(_sentence_pair)
+                    _counter += 1
+                except ValueError:
+                    pass
+
+        data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+        data_y.extend(_data_y_list)
 
         self.data_x = data_x
         self.data_y = data_y
@@ -74,11 +88,12 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train.txt',
+    data_list = ['../data/ca/task3_train_1k.txt',
                  ]
 
-    a = DataProcess()
+    a = DataProcess(_show_token=False)
     a.load_data(file_list=data_list)
+
     a.get_feature()
 
     for _x, _y in a.next_batch():

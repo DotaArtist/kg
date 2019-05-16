@@ -6,12 +6,13 @@ __author__ = 'yp'
 import tensorflow as tf
 from data_process import DataProcess
 from sklearn.metrics import classification_report
+from mode_1 import Model1
 
 
-train_data_list = ['../data/ca/task3_train_train.txt',
+train_data_list = ['../data/ca/task3_train_1k.txt',
                    ]
 
-test_data_list = ['../data/ca/task3_train_test.txt']
+test_data_list = ['../data/ca/task3_train_1k.txt']
 
 bert_size = 768
 class_num = 2
@@ -22,18 +23,13 @@ input_y = tf.placeholder(tf.int64, shape=[None, class_num], name='input_y')
 keep_prob = tf.placeholder(tf.float32, name="keep_prob")
 # is_training = tf.placeholder('bool', [])
 
-with tf.variable_scope('fc_1', reuse=tf.AUTO_REUSE):
-    weights = tf.get_variable(shape=[bert_size, class_num], initializer=tf.random_normal_initializer(), name="w", trainable=True)
-    biases = tf.get_variable(shape=[class_num], initializer=tf.random_normal_initializer(), name="b", trainable=True)
-    fc_1_output = tf.nn.xw_plus_b(input_x, weights, biases)
-    fc_1_drop_out = tf.nn.dropout(fc_1_output, keep_prob)
+model = Model1(learning_rate=0.0001)
 
-y_hat = tf.nn.softmax(fc_1_drop_out)
+y_hat = model.inference(input_x)
+loss = model.loss(input_x, input_y)
+train_op = model.optimize()
+y_predict = model.predict(input_x)
 
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y_hat, labels=input_y))
-train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-
-y_predict = tf.argmax(y_hat, 1, name="y_pred")
 accuracy = tf.reduce_mean(tf.cast(tf.equal(y_predict, input_y), tf.float32), name="accuracy")
 
 init = tf.global_variables_initializer()
@@ -78,24 +74,3 @@ with tf.Session() as sess:
         y_label_list = [0 if i[0] == 0 else 1 for i in y_list]
         print("====epoch: {0}".format(epoch))
         print(classification_report(y_true=y_label_list, y_pred=y_predict_list))
-
-        # builder = tf.saved_model.builder.SavedModelBuilder("".join(["./bert_model/", str(i)]))
-        # model_input = tf.saved_model.utils.build_tensor_info(input_x)
-        # model_output = tf.saved_model.utils.build_tensor_info(y_predict)
-        #
-        # prediction_signature = (
-        #     tf.saved_model.signature_def_utils.build_signature_def(
-        #         inputs={
-        #             'model_input': model_input,
-        #         },
-        #         outputs={'model_output': model_output},
-        #         method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME
-        #     ))
-        #
-        # builder.add_meta_graph_and_variables(
-        #     sess, [tf.saved_model.tag_constants.SERVING],
-        #     {tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: prediction_signature}
-        # )
-        #
-        # builder.save()
-        # print('Done exporting!')
