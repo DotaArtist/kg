@@ -21,7 +21,7 @@ class DataProcess(object):
         self.data_x = None
         self.data_y = None
 
-    def load_data(self, file_list):
+    def load_data(self, file_list, is_shuffle=True):
         self.data_path = file_list
         data = pd.DataFrame()
         for i in file_list:
@@ -30,7 +30,8 @@ class DataProcess(object):
 
             data = pd.concat([data, data_tmp])
 
-        data = shuffle(data)
+        if is_shuffle:
+            data = shuffle(data)
         self.data = data
 
     def get_feature(self):
@@ -91,7 +92,7 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train_1k.txt',
+    data_list = ['../data/ca/task3_train_train.txt',
                  ]
 
     a = DataProcess(_show_token=False)
