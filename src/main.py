@@ -6,7 +6,7 @@ __author__ = 'yp'
 import tensorflow as tf
 from data_process import DataProcess
 from sklearn.metrics import classification_report
-from mode_1 import Model1
+from model_2 import Model2
 
 train_data_list = ['../data/ca/task3_train_train.txt']
 
@@ -16,7 +16,7 @@ bert_size = 768
 class_num = 2
 learning_rate = 0.0001
 
-model = Model1(learning_rate=0.0001)
+model = Model2(learning_rate=0.0001)
 
 init = tf.global_variables_initializer()
 

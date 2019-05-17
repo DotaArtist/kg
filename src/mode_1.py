@@ -4,8 +4,7 @@ import tensorflow as tf
 
 
 class Model1(object):
-    def __init__(self, is_training=True, num_classes=2, learning_rate=0.0001, bert_size=768, keep_prob=0.9):
-        self.is_training = is_training
+    def __init__(self, num_classes=2, learning_rate=0.0001, bert_size=768, keep_prob=0.9):
         self.num_classes = num_classes
         self.bert_size = bert_size
         self.keep_prob = keep_prob
@@ -21,14 +20,14 @@ class Model1(object):
         self.train_op = self.train()
         self.accuracy_val = self.accuracy()
 
-    def inference(self):
+    def inference(self, is_training=True):
         with tf.variable_scope('fc_1', reuse=tf.AUTO_REUSE):
             weights = tf.get_variable(shape=[self.bert_size, self.num_classes],
                                       initializer=tf.random_normal_initializer(), name="w",
-                                      trainable=self.is_training)
+                                      trainable=is_training)
             biases = tf.get_variable(shape=[self.num_classes],
                                      initializer=tf.random_normal_initializer(), name="b",
-                                     trainable=self.is_training)
+                                     trainable=is_training)
             fc_1_output = tf.nn.xw_plus_b(self.input_x, weights, biases)
             fc_1_drop_out = tf.nn.dropout(fc_1_output, self.keep_prob)
             logits = tf.nn.softmax(fc_1_drop_out)
