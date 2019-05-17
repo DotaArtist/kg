@@ -19,8 +19,7 @@ if __name__ == "__main__":
     from datetime import datetime
     aa = datetime.now()
     model = BertPreTrain()
-    a = model.get_output(['输入内容文本最大长度128 ||| 什么 ', '输入内容文本最大长度128 ||| 什么 '])
+    a = model.get_output(['输入内容文本最大长度128 ||| 什么 ', '输入内容文本最大长度128 ||| 什么 '], _show_tokens=False)
     bb = datetime.now()
     print((bb-aa).microseconds)
-    print(a[0].shape)
-    print(a[1])
+    print(a.shape)

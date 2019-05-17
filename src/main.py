@@ -8,29 +8,15 @@ from data_process import DataProcess
 from sklearn.metrics import classification_report
 from mode_1 import Model1
 
+train_data_list = ['../data/ca/task3_train_train.txt']
 
-train_data_list = ['../data/ca/task3_train_1k.txt',
-                   ]
-
-test_data_list = ['../data/ca/task3_train_1k.txt']
+test_data_list = ['../data/ca/task3_train_test.txt']
 
 bert_size = 768
 class_num = 2
 learning_rate = 0.0001
 
-input_x = tf.placeholder(tf.float32, shape=[None, bert_size], name='input_x')
-input_y = tf.placeholder(tf.int64, shape=[None, class_num], name='input_y')
-keep_prob = tf.placeholder(tf.float32, name="keep_prob")
-# is_training = tf.placeholder('bool', [])
-
 model = Model1(learning_rate=0.0001)
-
-y_hat = model.inference(input_x)
-loss = model.loss(input_x, input_y)
-train_op = model.optimize()
-y_predict = model.predict(input_x)
-
-accuracy = tf.reduce_mean(tf.cast(tf.equal(y_predict, input_y), tf.float32), name="accuracy")
 
 init = tf.global_variables_initializer()
 
@@ -51,22 +37,27 @@ with tf.Session() as sess:
     for i in range(epoch):
 
         for batch_x, batch_y in train_data_process.next_batch():
-            _, _loss = sess.run([train_op, loss], feed_dict={
-                input_x: batch_x,
-                input_y: batch_y,
-                keep_prob: 0.9,
-            })
+            _y_hat, _y_pred, _loss, _opt, _acc = sess.run([model.logits,
+                                                           model.y_predict_val,
+                                                           model.loss_val,
+                                                           model.train_op,
+                                                           model.accuracy_val,
+                                                           ],
+                                                          feed_dict={model.input_x: batch_x,
+                                                                     model.input_y: batch_y,
+                                                                     model.keep_prob: 0.9})
 
             step += 1
-            print("===step:{0} ===loss:{1}".format(step, _loss))
+            if step % 100 == 0:
+                print("===step:{0} ===loss:{1}".format(step, _loss))
 
         y_predict_list = []
         y_list = []
         for batch_x, batch_y in test_data_process.next_batch():
-            _y_pred = sess.run([y_predict], feed_dict={
-                input_x: batch_x,
-                input_y: batch_y,
-                keep_prob: 1.0,
+            _y_pred = sess.run([model.predict()], feed_dict={
+                model.input_x: batch_x,
+                model.input_y: batch_y,
+                model.keep_prob: 1.0,
             })
             y_predict_list.extend(list(_y_pred[0]))
             y_list.extend(list(batch_y))

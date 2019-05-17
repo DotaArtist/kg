@@ -1,24 +1,27 @@
 # coding=utf-8
-# coding=utf-8
-"""bi_lstm"""
+"""model_2"""
 import tensorflow as tf
 
 
 class Model2(object):
-    def __init__(self, is_training=True, num_classes=2, learning_rate=0.0001):
+    def __init__(self, is_training=True, num_classes=2, learning_rate=0.0001, bert_size=768, keep_prob=0.9):
         self.is_training = is_training
         self.num_classes = num_classes
-        self.bert_size = 768
-        self.keep_prob = 0.9
+        self.bert_size = bert_size
+        self.keep_prob = keep_prob
         self.learning_rate = learning_rate
 
-        self.y_hat = None
-        self.loss = None
-        self.learning_rate = None
-        self.train_op = None
-        self.y_predict = None
+        self.input_x = tf.placeholder(tf.float32, shape=[None, bert_size], name='input_x')
+        self.input_y = tf.placeholder(tf.int64, shape=[None, num_classes], name='input_y')
+        self.keep_prob = tf.placeholder(tf.float32, name="keep_prob")
 
-    def inference(self, input_x):
+        self.logits = self.inference()
+        self.y_predict_val = self.predict()
+        self.loss_val = self.loss()
+        self.train_op = self.train()
+        self.accuracy_val = self.accuracy()
+
+    def inference(self):
         with tf.variable_scope('fc_1', reuse=tf.AUTO_REUSE):
             weights = tf.get_variable(shape=[self.bert_size, self.num_classes],
                                       initializer=tf.random_normal_initializer(), name="w",
@@ -26,28 +29,27 @@ class Model2(object):
             biases = tf.get_variable(shape=[self.num_classes],
                                      initializer=tf.random_normal_initializer(), name="b",
                                      trainable=self.is_training)
-            fc_1_output = tf.nn.xw_plus_b(input_x, weights, biases)
+            fc_1_output = tf.nn.xw_plus_b(self.input_x, weights, biases)
             fc_1_drop_out = tf.nn.dropout(fc_1_output, self.keep_prob)
-            y_hat = tf.nn.softmax(fc_1_drop_out)
-            self.y_hat = y_hat
-            return self.y_hat
+            logits = tf.nn.softmax(fc_1_drop_out)
+            return logits
 
-    def predict(self, input_x):
-        y_hat = self.inference(input_x)
-        y_predict = tf.argmax(y_hat, 1, name="y_pred")
-        self.y_predict = y_predict
-        return self.y_predict
+    def predict(self):
+        y_predict = tf.argmax(self.logits, axis=1, name="y_pred")
+        return y_predict
 
-    def loss(self, input_x, input_y):
-        y_hat = self.inference(input_x)
-        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y_hat, labels=input_y)
+    def loss(self, l2_lambda=0.0001):
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.input_y)
         cross_entropy_mean = tf.reduce_mean(cross_entropy)
-        regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-        loss = tf.add_n([cross_entropy_mean] + regularization_losses)
-        self.loss = loss
-        return self.loss
+        regularization_losses = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'bias' not in v.name]) * l2_lambda
+        loss = cross_entropy_mean + regularization_losses
+        return loss
 
-    def optimize(self):
-        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
-        self.train_op = train_op
-        return self.train_op
+    def train(self):
+        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss_val)
+        return train_op
+
+    def accuracy(self):
+        accuracy = tf.reduce_mean(tf.cast(
+            tf.equal(self.y_predict_val, tf.argmax(self.input_y, axis=1)), tf.float32), name="accuracy")
+        return accuracy

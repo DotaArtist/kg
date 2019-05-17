@@ -68,6 +68,9 @@ class DataProcess(object):
         self.data_x = data_x
         self.data_y = data_y
 
+        print("data_x shape:", np.array(data_x).shape)
+        print("data_y shape:", np.array(data_y).shape)
+
     def next_batch(self):
         counter = 0
         batch_x = []
@@ -96,5 +99,5 @@ if __name__ == '__main__':
 
     a.get_feature()
 
-    for _x, _y in a.next_batch():
-        print(_x.shape, _y.shape)
+    for x, y in a.next_batch():
+        print(x.shape, y.shape)
