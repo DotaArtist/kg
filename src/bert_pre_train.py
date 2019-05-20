@@ -5,8 +5,13 @@ from bert_serving.client import BertClient
 
 
 class BertPreTrain(object):
-    def __init__(self):
-        self.model = BertClient(ip='172.17.21.16', port=5555)
+    def __init__(self, mode='remote'):
+        self.mode = mode
+
+        if mode == 'remote':
+            self.model = BertClient(ip='172.17.21.16', port=5555)
+        else:
+            self.model = BertClient(ip='127.0.0.1', port=5555)
 
     def get_output(self, sentence, _show_tokens=True):
         try:
@@ -18,7 +23,7 @@ class BertPreTrain(object):
 if __name__ == "__main__":
     from datetime import datetime
     aa = datetime.now()
-    model = BertPreTrain()
+    model = BertPreTrain(mode='local')
     a = model.get_output(['输入内容文本最大长度128 ||| 什么 ', '输入内容文本最大长度128 ||| 什么 '], _show_tokens=False)
     bb = datetime.now()
     print((bb-aa).microseconds)
