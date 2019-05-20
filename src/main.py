@@ -6,14 +6,14 @@ __author__ = 'yp'
 import tensorflow as tf
 from data_process import DataProcess
 from sklearn.metrics import classification_report
-from model_2 import Model2
+from model_3 import Model3
 
 MODE = 'train'
 
-train_data_list = ['../data/ca/task3_train_train.txt']
-test_data_list = ['../data/ca/task3_train_test.txt']
+train_data_list = ['../data/ca/task3_train_1k.txt']
+test_data_list = ['../data/ca/task3_train_1k.txt']
 
-model = Model2(learning_rate=0.0001)
+model = Model3(learning_rate=0.0001)
 
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(tf.global_variables())
@@ -40,6 +40,7 @@ if MODE == 'train':
                 _loss, _opt = sess.run([model.loss_val, model.train_op],
                                        feed_dict={model.input_x: batch_x,
                                                   model.input_y: batch_y,
+                                                  model.sequence_lengths: batch_x.shape[1],
                                                   model.keep_prob: 0.8})
 
                 step += 1
@@ -80,4 +81,5 @@ elif MODE == 'predict':
             model.is_training = False
             _y_pred = sess.run([model.y_predict_val], feed_dict={model.input_x: batch_x,
                                                                  model.input_y: batch_y,
+                                                                 model.sequence_lengths: batch_x.shape[1],
                                                                  model.keep_prob: 1.0})

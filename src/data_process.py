@@ -34,37 +34,41 @@ class DataProcess(object):
             data = shuffle(data)
         self.data = data
 
-    def get_feature(self):
-        data_x = []
-        data_y = []
+    def get_feature(self, mode='online'):
+        if mode == 'online':
+            data_x = []
+            data_y = []
 
-        _counter = 1
-        _sentence_pair_list = []
-        _data_y_list = []
-        for index, row in tqdm(self.data.iterrows()):
+            _counter = 1
+            _sentence_pair_list = []
+            _data_y_list = []
+            for index, row in tqdm(self.data.iterrows()):
 
-            if _counter % 32 == 0:
-                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
-                data_y.extend(_data_y_list)
+                if _counter % 32 == 0:
+                    data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+                    data_y.extend(_data_y_list)
 
-                _sentence_pair_list = []
-                _data_y_list = []
-                _counter = 1
-            else:
-                try:
-                    if int(row['label']) == 1:
-                        _data_y_list.append([0, 1])
-                    elif int(row['label']) == 0:
-                        _data_y_list.append([1, 0])
+                    _sentence_pair_list = []
+                    _data_y_list = []
+                    _counter = 1
+                else:
+                    try:
+                        if int(row['label']) == 1:
+                            _data_y_list.append([0, 1])
+                        elif int(row['label']) == 0:
+                            _data_y_list.append([1, 0])
 
-                    _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
-                    _sentence_pair_list.append(_sentence_pair)
-                    _counter += 1
-                except ValueError:
-                    pass
+                        _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+                        _sentence_pair_list.append(_sentence_pair)
+                        _counter += 1
+                    except ValueError:
+                        pass
 
-        data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
-        data_y.extend(_data_y_list)
+            data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+            data_y.extend(_data_y_list)
+
+        elif mode == 'offline':
+            pass
 
         self.data_x = data_x
         self.data_y = data_y
@@ -92,7 +96,7 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train_train.txt',
+    data_list = ['../data/ca/task3_train_1k.txt',
                  ]
 
     a = DataProcess(_show_token=False)
