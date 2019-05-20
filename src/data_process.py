@@ -3,6 +3,8 @@
 
 __author__ = 'yp'
 
+import os
+import pickle
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -34,7 +36,7 @@ class DataProcess(object):
             data = shuffle(data)
         self.data = data
 
-    def get_feature(self, mode='online'):
+    def get_feature(self, _data_path, mode='online'):
         if mode == 'online':
             data_x = []
             data_y = []
@@ -67,8 +69,23 @@ class DataProcess(object):
             data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
             data_y.extend(_data_y_list)
 
-        elif mode == 'offline':
-            pass
+            print("start save pkl...")
+            if not os.path.isdir('../data/{0}'.format(str(_data_path))):
+                os.mkdir('../data/{0}'.format(str(_data_path)))
+
+            with open('../data/{0}/data_x.pkl'.format(str(_data_path)), 'wb') as fx:
+                pickle.dump(data_x, fx)
+
+            with open('../data/{0}/data_y.pkl'.format(str(_data_path)), 'wb') as fy:
+                pickle.dump(data_y, fy)
+
+        else:
+            print("start load pkl...")
+            with open('../data/{0}/data_x.pkl'.format(str(_data_path)), 'rb') as fx:
+                data_x = pickle.load(fx)
+
+            with open('../data/{0}/data_y.pkl'.format(str(_data_path)), 'rb') as fy:
+                data_y = pickle.load(fy)
 
         self.data_x = data_x
         self.data_y = data_y
@@ -96,13 +113,13 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train_1k.txt',
+    data_list = ['../data/ca/task3_train_100.txt',
                  ]
 
     a = DataProcess(_show_token=False)
     a.load_data(file_list=data_list)
 
-    a.get_feature()
+    a.get_feature(mode='online', _data_path='100')
 
     for x, y in a.next_batch():
-        print(x.shape, y.shape)
+        print(x.shape[1], y.shape)
