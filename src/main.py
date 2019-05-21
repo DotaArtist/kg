@@ -62,7 +62,7 @@ if TRAIN_MODE == 'train':
             for batch_x, batch_y in test_data_process.next_batch():
                 model.is_training = False
                 _seq_len = np.array([len(_) for _ in batch_x])
-                _y_pred, _y_hat = sess.run([model.predict(), model.inference()], feed_dict={
+                _y_pred, _y_hat = sess.run([model.y_predict_val, model.logits], feed_dict={
                     model.input_x: batch_x,
                     model.input_y: batch_y,
                     model.keep_prob: 1.0,
