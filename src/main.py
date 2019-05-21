@@ -27,11 +27,11 @@ if TRAIN_MODE == 'train':
     with tf.Session(config=config) as sess:
         sess.run(init)
 
-        train_data_process = DataProcess()
+        train_data_process = DataProcess(mode='remote')
         train_data_process.load_data(file_list=train_data_list)
         train_data_process.get_feature()
 
-        test_data_process = DataProcess()
+        test_data_process = DataProcess(mode='remote')
         test_data_process.load_data(file_list=test_data_list)
         test_data_process.get_feature()
 
@@ -76,7 +76,7 @@ if TRAIN_MODE == 'train':
 elif TRAIN_MODE == 'predict':
     predict_data_list = ['../data/ca/task3_train_test.txt']
 
-    predict_data_process = DataProcess()
+    predict_data_process = DataProcess(mode='remote')
     predict_data_process.load_data(file_list=predict_data_list)
     predict_data_process.get_feature()
 

@@ -11,13 +11,13 @@ from bert_pre_train import BertPreTrain
 
 
 class DataProcess(object):
-    def __init__(self, _show_token=False):
+    def __init__(self, _show_token=False, mode='remote'):
         self.bert_batch_size = 32
         self.batch_size = 32
         self.data_path = None
         self.show_token = _show_token
         self.data = None
-        self.bert_model = BertPreTrain(mode='remote')
+        self.bert_model = BertPreTrain(mode=mode)
         self.data_x = None
         self.data_y = None
 
