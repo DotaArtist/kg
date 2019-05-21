@@ -56,7 +56,6 @@ class DataProcess(object):
         data_y = []
 
         _sentence_pair_list = []
-        _data_y_list = []
 
         for index, row in tqdm(self.data.iterrows()):
             if int(row['label']) == 1:
@@ -68,7 +67,14 @@ class DataProcess(object):
                 continue
 
             _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
-            data_x.extend(list(self.bert_model.get_output([_sentence_pair], _show_tokens=False)))
+            _sentence_pair_list.append(_sentence_pair)
+
+            if len(_sentence_pair_list) == 32:
+                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+                _sentence_pair_list = []
+
+        if len(_sentence_pair_list) > 0:
+            data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
 
         data_x = np.array(data_x)
         data_y = np.array(data_y)
@@ -102,7 +108,7 @@ if __name__ == '__main__':
     data_list = ['../data/ca/task3_train_100.txt',
                  ]
 
-    a = DataProcess(_show_token=False)
+    a = DataProcess(_show_token=False, mode='local')
     a.load_data(file_list=data_list, is_shuffle=False)
     print(a.data)
 
