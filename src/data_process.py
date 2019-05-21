@@ -3,7 +3,6 @@
 
 __author__ = 'yp'
 
-import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -13,7 +12,7 @@ from bert_pre_train import BertPreTrain
 
 class DataProcess(object):
     def __init__(self, _show_token=False):
-        self.bert_batch_size = 8
+        self.bert_batch_size = 32
         self.batch_size = 32
         self.data_path = None
         self.show_token = _show_token
@@ -35,56 +34,40 @@ class DataProcess(object):
             data = shuffle(data)
         self.data = data
 
-    def get_feature(self, _data_path, mode='online'):
-        if mode == 'online':
-            data_x = []
-            data_y = []
+    def get_feature(self):
+        data_x = []
+        data_y = []
 
-            _counter = 1
-            _sentence_pair_list = []
-            _data_y_list = []
-            for index, row in tqdm(self.data.iterrows()):
+        _counter = 1
+        _sentence_pair_list = []
+        _data_y_list = []
+        for index, row in tqdm(self.data.iterrows()):
 
-                if _counter % 32 == 0:
-                    data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
-                    data_y.extend(_data_y_list)
+            if _counter % 32 == 0:
+                data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
+                data_y.extend(_data_y_list)
 
-                    _sentence_pair_list = []
-                    _data_y_list = []
-                    _counter = 1
-                else:
-                    try:
-                        if int(row['label']) == 1:
-                            _data_y_list.append([0, 1])
-                        elif int(row['label']) == 0:
-                            _data_y_list.append([1, 0])
+                _sentence_pair_list = []
+                _data_y_list = []
+                _counter = 1
+            else:
+                try:
+                    if int(row['label']) == 1:
+                        _data_y_list.append([0, 1])
+                    elif int(row['label']) == 0:
+                        _data_y_list.append([1, 0])
 
-                        _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
-                        _sentence_pair_list.append(_sentence_pair)
-                        _counter += 1
-                    except ValueError:
-                        pass
+                    _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+                    _sentence_pair_list.append(_sentence_pair)
+                    _counter += 1
+                except ValueError:
+                    pass
 
             data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
             data_y.extend(_data_y_list)
 
-            data_x = np.array(data_x)
-            data_y = np.array(data_y)
-
-        #     print("start save npy...")
-        #     if not os.path.isdir('../data/{0}'.format(str(_data_path))):
-        #         os.mkdir('../data/{0}'.format(str(_data_path)))
-        #
-        #     np.save('../data/{0}/data_x.npy'.format(str(_data_path)), np.array(data_x, dtype=np.float16))
-        #     np.save('../data/{0}/data_y.npy'.format(str(_data_path)), np.array(data_y, dtype=np.float16))
-        #
-        else:
-            print("start load npy...")
-            data_x = np.load('../data/{0}/data_x.npy'.format(str(_data_path)))
-            data_y = np.load('../data/{0}/data_y.npy'.format(str(_data_path)))
-
-            data_x = np.array(data_x, dtype=np.float32)
-            data_y = np.array(data_y, dtype=np.float32)
+        data_x = np.array(data_x)
+        data_y = np.array(data_y)
 
         self.data_x = data_x
         self.data_y = data_y
@@ -118,7 +101,7 @@ if __name__ == '__main__':
     a = DataProcess(_show_token=False)
     a.load_data(file_list=data_list)
 
-    a.get_feature(mode='offline', _data_path='100')
+    a.get_feature()
 
     for x, y in a.next_batch():
         print(x.dtype, y.shape)

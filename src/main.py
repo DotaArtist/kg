@@ -9,7 +9,6 @@ from data_process import DataProcess
 from sklearn.metrics import classification_report
 from model_3 import Model3
 
-FEATURE_MODE = 'online'
 TRAIN_MODE = 'train'
 
 train_data_list = ['../data/ca/task3_train_train.txt']
@@ -27,11 +26,11 @@ if TRAIN_MODE == 'train':
 
         train_data_process = DataProcess()
         train_data_process.load_data(file_list=train_data_list)
-        train_data_process.get_feature(mode=FEATURE_MODE, _data_path='bert_train')
+        train_data_process.get_feature()
 
         test_data_process = DataProcess()
         test_data_process.load_data(file_list=test_data_list)
-        test_data_process.get_feature(mode=FEATURE_MODE, _data_path='bert_test')
+        test_data_process.get_feature()
 
         step = 0
         epoch = 20
@@ -76,7 +75,7 @@ elif TRAIN_MODE == 'predict':
 
     predict_data_process = DataProcess()
     predict_data_process.load_data(file_list=predict_data_list)
-    predict_data_process.get_feature(mode=FEATURE_MODE, _data_path='bert_predict')
+    predict_data_process.get_feature()
 
     with tf.Session() as sess:
         saver = tf.train.Saver()
