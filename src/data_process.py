@@ -51,10 +51,14 @@ class DataProcess(object):
                 _data_y_list = []
                 _counter = 1
             else:
-                if int(row['label']) == 1:
-                    _data_y_list.append([0, 1])
-                elif int(row['label']) == 0:
-                    _data_y_list.append([1, 0])
+                try:
+                    if int(row['label']) == 1:
+                        _data_y_list.append([0, 1])
+                    elif int(row['label']) == 0:
+                        _data_y_list.append([1, 0])
+                except ValueError:
+                    print(row)
+                    continue
 
                 _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
                 _sentence_pair_list.append(_sentence_pair)
@@ -93,7 +97,7 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train_100.txt',
+    data_list = ['../data/ca/task3_train.txt',
                  ]
 
     a = DataProcess(_show_token=False)

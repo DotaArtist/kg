@@ -11,7 +11,7 @@ from model_3 import Model3
 
 TRAIN_MODE = 'train'
 
-train_data_list = ['../data/ca/task3_train_train.txt']
+train_data_list = ['../data/ca/task3_train_5w.txt']
 test_data_list = ['../data/ca/task3_train_test.txt']
 
 model = Model3(learning_rate=0.0001)

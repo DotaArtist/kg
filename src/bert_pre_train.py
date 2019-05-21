@@ -7,9 +7,9 @@ from bert_serving.client import BertClient
 class BertPreTrain(object):
     def __init__(self, mode='remote'):
         if mode == 'remote':
-            self.model = BertClient(ip='172.17.21.16', port=5555)
+            self.model = BertClient(ip='172.17.21.16', port=5555, check_version=False)
         else:
-            self.model = BertClient(ip='127.0.0.1', port=5555)
+            self.model = BertClient(ip='127.0.0.1', port=5555, check_version=False)
 
     def get_output(self, sentence, _show_tokens=True):
         try:
