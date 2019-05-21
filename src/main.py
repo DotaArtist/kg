@@ -19,9 +19,12 @@ model = Model3(learning_rate=0.0001)
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(tf.global_variables())
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+
 if TRAIN_MODE == 'train':
 
-    with tf.Session() as sess:
+    with tf.Session(config=config) as sess:
         sess.run(init)
 
         train_data_process = DataProcess()
@@ -77,7 +80,7 @@ elif TRAIN_MODE == 'predict':
     predict_data_process.load_data(file_list=predict_data_list)
     predict_data_process.get_feature()
 
-    with tf.Session() as sess:
+    with tf.Session(config=config) as sess:
         saver = tf.train.Saver()
         saver.restore(sess, "../model/model_epoch_1")
 
