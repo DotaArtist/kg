@@ -51,18 +51,16 @@ class DataProcess(object):
                 _data_y_list = []
                 _counter = 1
             else:
-                try:
-                    if int(row['label']) == 1:
-                        _data_y_list.append([0, 1])
-                    elif int(row['label']) == 0:
-                        _data_y_list.append([1, 0])
+                if int(row['label']) == 1:
+                    _data_y_list.append([0, 1])
+                elif int(row['label']) == 0:
+                    _data_y_list.append([1, 0])
 
-                    _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
-                    _sentence_pair_list.append(_sentence_pair)
-                    _counter += 1
-                except ValueError:
-                    pass
+                _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+                _sentence_pair_list.append(_sentence_pair)
+                _counter += 1
 
+        if len(_sentence_pair_list) != 0:
             data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
             data_y.extend(_data_y_list)
 

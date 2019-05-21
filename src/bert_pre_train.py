@@ -15,7 +15,7 @@ class BertPreTrain(object):
         try:
             return self.model.encode(sentence, show_tokens=_show_tokens)
         except TypeError:
-            print("sentence must be list！")
+            print("sentence must be list!")
 
 
 if __name__ == "__main__":
