@@ -68,7 +68,7 @@ if TRAIN_MODE == 'train':
                     model.keep_prob: 1.0,
                     model.sequence_lengths: _seq_len
                 })
-                y_predict_list.extend(list(_y_pred[0]))
+                y_predict_list.extend(list(_y_pred))
                 y_list.extend(list(batch_y))
                 y_hat_list.extend(list(_y_hat))
 
@@ -76,6 +76,7 @@ if TRAIN_MODE == 'train':
 
             _out_file = test_data_process.data
             _out_file['y_hat'] = pd.Series(y_hat_list)
+            _out_file['y_pred'] = pd.Series(y_predict_list)
 
             print("====epoch: {0}".format(i))
             print(classification_report(y_true=y_label_list, y_pred=y_predict_list))
