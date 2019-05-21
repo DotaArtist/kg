@@ -25,8 +25,25 @@ class DataProcess(object):
         self.data_path = file_list
         data = pd.DataFrame()
         for i in file_list:
-            data_tmp = pd.read_csv(open(i, encoding='utf-8'), header=0, sep='\t', engine='c', error_bad_lines=False)
-            data_tmp.columns = ["sentence_1", "sentence_2", "label"]
+
+            sen_1_list = []
+            sen_2_list = []
+            label_list = []
+
+            data_tmp = pd.DataFrame()
+            with open(i, encoding='utf-8', mode='r') as _f:
+                for line in _f.readlines():
+                    sen_1, sen_2, label = line.strip().split('\t')
+                    sen_1_list.append(sen_1)
+                    sen_2_list.append(sen_2)
+                    label_list.append(label)
+
+            data_tmp['sentence_1'] = pd.Series(sen_1_list)
+            data_tmp['sentence_2'] = pd.Series(sen_2_list)
+            data_tmp['label'] = pd.Series(label_list)
+
+            # data_tmp = pd.read_csv(open(i, encoding='utf-8'), header=0, sep='\t', engine='python', error_bad_lines=False)
+            # data_tmp.columns = ["sentence_1", "sentence_2", "label"]
 
             data = pd.concat([data, data_tmp])
 
@@ -38,33 +55,28 @@ class DataProcess(object):
         data_x = []
         data_y = []
 
-        _counter = 1
         _sentence_pair_list = []
         _data_y_list = []
-        for index, row in tqdm(self.data.iterrows()):
 
-            if _counter % 32 == 0:
+        for index, row in tqdm(self.data.iterrows()):
+            if len(_sentence_pair_list) == 32:
                 data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
                 data_y.extend(_data_y_list)
 
                 _sentence_pair_list = []
                 _data_y_list = []
-                _counter = 1
             else:
-                try:
-                    if int(row['label']) == 1:
-                        _data_y_list.append([0, 1])
-                    elif int(row['label']) == 0:
-                        _data_y_list.append([1, 0])
-                except ValueError:
-                    print(row)
-                    continue
+                if int(row['label']) == 1:
+                    _data_y_list.append([0, 1])
+                elif int(row['label']) == 0:
+                    _data_y_list.append([1, 0])
+                else:
+                    print('error')
 
                 _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
                 _sentence_pair_list.append(_sentence_pair)
-                _counter += 1
 
-        if len(_sentence_pair_list) != 0:
+        if len(_sentence_pair_list) >= 0:
             data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
             data_y.extend(_data_y_list)
 
@@ -97,11 +109,12 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = ['../data/ca/task3_train.txt',
+    data_list = ['../data/ca/task3_train_100.txt',
                  ]
 
     a = DataProcess(_show_token=False)
-    a.load_data(file_list=data_list)
+    a.load_data(file_list=data_list, is_shuffle=False)
+    print(a.data)
 
     a.get_feature()
 
