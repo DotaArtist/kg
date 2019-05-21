@@ -47,7 +47,7 @@ if TRAIN_MODE == 'train':
                                                   model.keep_prob: 0.8})
 
                 step += 1
-                if step % 10 == 0:
+                if step % 1000 == 0:
                     print("===step:{0} ===loss:{1}".format(step, _loss))
 
             save_path = saver.save(sess, "../model/%s/model_epoch_%s" % (str(i), str(i)))

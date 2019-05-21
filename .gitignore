@@ -13,3 +13,8 @@ src/__pycache__/
 /model/
 data/ca/task3_test_data_expand.zip
 model/
+/data/bert_train/
+/data/bert_test/
+data/bert_test/
+data/bert_train/
+data/ca/task3_train_100.txt

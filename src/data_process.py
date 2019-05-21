@@ -4,7 +4,6 @@
 __author__ = 'yp'
 
 import os
-import pickle
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -19,7 +18,7 @@ class DataProcess(object):
         self.data_path = None
         self.show_token = _show_token
         self.data = None
-        self.bert_model = BertPreTrain()
+        self.bert_model = BertPreTrain(mode='remote')
         self.data_x = None
         self.data_y = None
 
@@ -69,29 +68,29 @@ class DataProcess(object):
             data_x.extend(list(self.bert_model.get_output(_sentence_pair_list, _show_tokens=False)))
             data_y.extend(_data_y_list)
 
-            print("start save pkl...")
-            if not os.path.isdir('../data/{0}'.format(str(_data_path))):
-                os.mkdir('../data/{0}'.format(str(_data_path)))
+            data_x = np.array(data_x)
+            data_y = np.array(data_y)
 
-            with open('../data/{0}/data_x.pkl'.format(str(_data_path)), 'wb') as fx:
-                pickle.dump(data_x, fx)
-
-            with open('../data/{0}/data_y.pkl'.format(str(_data_path)), 'wb') as fy:
-                pickle.dump(data_y, fy)
-
+        #     print("start save npy...")
+        #     if not os.path.isdir('../data/{0}'.format(str(_data_path))):
+        #         os.mkdir('../data/{0}'.format(str(_data_path)))
+        #
+        #     np.save('../data/{0}/data_x.npy'.format(str(_data_path)), np.array(data_x, dtype=np.float16))
+        #     np.save('../data/{0}/data_y.npy'.format(str(_data_path)), np.array(data_y, dtype=np.float16))
+        #
         else:
-            print("start load pkl...")
-            with open('../data/{0}/data_x.pkl'.format(str(_data_path)), 'rb') as fx:
-                data_x = pickle.load(fx)
+            print("start load npy...")
+            data_x = np.load('../data/{0}/data_x.npy'.format(str(_data_path)))
+            data_y = np.load('../data/{0}/data_y.npy'.format(str(_data_path)))
 
-            with open('../data/{0}/data_y.pkl'.format(str(_data_path)), 'rb') as fy:
-                data_y = pickle.load(fy)
+            data_x = np.array(data_x, dtype=np.float32)
+            data_y = np.array(data_y, dtype=np.float32)
 
         self.data_x = data_x
         self.data_y = data_y
 
-        print("data_x shape:", np.array(data_x).shape)
-        print("data_y shape:", np.array(data_y).shape)
+        print("data_x shape:", data_x.shape)
+        print("data_y shape:", data_y.shape)
 
     def next_batch(self):
         counter = 0
@@ -119,7 +118,7 @@ if __name__ == '__main__':
     a = DataProcess(_show_token=False)
     a.load_data(file_list=data_list)
 
-    a.get_feature(mode='online', _data_path='100')
+    a.get_feature(mode='offline', _data_path='100')
 
     for x, y in a.next_batch():
-        print(x.shape[1], y.shape)
+        print(x.dtype, y.shape)
