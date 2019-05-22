@@ -24,3 +24,8 @@ data/ca/task3_train_5w.txt
 data/right_ca/
 !/data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/event_type_entity_extract_train.csv
 !/data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/event_type_entity_extract_eval.csv
+/data/fn/ccks2019_event_entity_extract.zip
+/data/fn/ccks2019_event_entity_extract/__MACOSX/
+/data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/
+data/fn/ccks2019_event_entity_extract.zip
+data/fn/ccks2019_event_entity_extract/__MACOSX/

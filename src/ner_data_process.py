@@ -26,51 +26,29 @@ class DataProcess(object):
         data = pd.DataFrame()
         for i in file_list:
 
-            sen_1_list = []
-            sen_2_list = []
-            label_list = []
+            idx_list = []
+            sent_list = []
+            type_list = []
+            ner_list = []
 
             data_tmp = pd.DataFrame()
             with open(i, encoding='utf-8', mode='r') as _f:
                 for line in _f.readlines():
-                    sen_1, sen_2, label = line.strip().split('\t')
-                    sen_1_list.append(sen_1)
-                    sen_2_list.append(sen_2)
-                    label_list.append(label)
+                    idx, sent, ty, ner = line.strip().strip("\"").split('\",\"')
+                    idx_list.append(idx)
+                    sent_list.append(sent)
+                    type_list.append(ty)
+                    ner_list.append(ner)
 
-            data_tmp['sentence_1'] = pd.Series(sen_1_list)
-            data_tmp['sentence_2'] = pd.Series(sen_2_list)
-            data_tmp['label'] = pd.Series(label_list)
+            data_tmp['idx'] = pd.Series(idx_list)
+            data_tmp['sentence'] = pd.Series(sent_list)
+            data_tmp['type'] = pd.Series(type_list)
+            data_tmp['ner'] = pd.Series(ner_list)
 
             data = pd.concat([data, data_tmp])
 
         if is_shuffle:
             data = shuffle(data)
-        self.data = data
-
-    def load_predict_data(self, file_list):
-        self.data_path = file_list
-        data = pd.DataFrame()
-        for i in file_list:
-
-            sen_1_list = []
-            sen_2_list = []
-            idx_list = []
-
-            data_tmp = pd.DataFrame()
-            with open(i, encoding='utf-8', mode='r') as _f:
-                for line in _f.readlines():
-                    idx, sen_1, sen_2 = line.strip().split('\t')
-                    idx_list.append(idx)
-                    sen_1_list.append(sen_1)
-                    sen_2_list.append(sen_2)
-
-            data_tmp['sentence_1'] = pd.Series(sen_1_list)
-            data_tmp['sentence_2'] = pd.Series(sen_2_list)
-            data_tmp['idx'] = pd.Series(idx_list)
-
-            data = pd.concat([data, data_tmp])
-
         self.data = data
 
     def get_feature(self, mode='train'):
@@ -80,17 +58,18 @@ class DataProcess(object):
         _sentence_pair_list = []
 
         for index, row in tqdm(self.data.iterrows()):
-            if mode == 'predict':
-                data_y.append([0, 1])
-            elif int(row['label']) == 1:
-                data_y.append([0, 1])
-            elif int(row['label']) == 0:
-                data_y.append([1, 0])
-            else:
-                print('error')
-                continue
+            data_y.append([0, 1])
+            # if mode == 'predict':
+            #     data_y.append([0, 1])
+            # elif int(row['label']) == 1:
+            #     data_y.append([0, 1])
+            # elif int(row['label']) == 0:
+            #     data_y.append([1, 0])
+            # else:
+            #     print('error')
+            #     continue
 
-            _sentence_pair = " ||| ".join([str(row['sentence_1']), str(row['sentence_2'])])
+            _sentence_pair = " ||| ".join([str(row['sentence']), str(row['type'])])
             _sentence_pair_list.append(_sentence_pair)
 
             if len(_sentence_pair_list) == 32:
@@ -129,13 +108,14 @@ class DataProcess(object):
 
 
 if __name__ == '__main__':
-    data_list = [  # '../data/ca/task3_train_100.txt',
-        '../data/ca/task3_dev_100.txt',
-    ]
+    data_list = ['../data/fn/event_type_entity_extract_train_100.csv',
+                 ]
 
     a = DataProcess(_show_token=False, mode='remote')
-    a.load_predict_data(file_list=data_list)
+    a.load_data(file_list=data_list)
 
+    # print(a.data)
+    #
     a.get_feature(mode='predict')
 
     for x, y in a.next_batch():

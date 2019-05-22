@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report
 from mode1_1 import Model1
 
 FEATURE_MODE = 'remote'
-TRAIN_MODE = 'predict'
+TRAIN_MODE = 'train'
 
 train_data_list = ['../data/ca/task3_train_5w.txt']
 test_data_list = ['../data/ca/task3_train_test.txt']
@@ -74,9 +74,11 @@ if TRAIN_MODE == 'train':
             _out_file['y_hat'] = pd.Series(y_hat_list)
             _out_file['y_pred'] = pd.Series(y_predict_list)
 
+            _out_file['label'] = _out_file['label'].astype('int')
+
             print("====epoch: {0}".format(i))
             print(classification_report(y_true=_out_file['label'].tolist(), y_pred=_out_file['y_pred'].tolist()))
-            _out_file.to_csv('./test_predict_{0}.tsv'.format(str(i)), sep='\t')
+            # _out_file.to_csv('./test_predict_{0}.tsv'.format(str(i)), sep='\t')
 
 
 elif TRAIN_MODE == 'predict':
