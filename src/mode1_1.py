@@ -19,6 +19,7 @@ class Model1(object):
         self.loss_val = self.loss()
         self.train_op = self.train()
         self.accuracy_val = self.accuracy()
+        self.sequence_lengths = tf.placeholder(tf.int32, shape=[None], name="sequence_lengths")
 
     def inference(self, is_training=True):
         with tf.variable_scope('fc_1', reuse=tf.AUTO_REUSE):

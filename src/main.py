@@ -8,7 +8,7 @@ import pandas as pd
 import tensorflow as tf
 from data_process import DataProcess
 from sklearn.metrics import classification_report
-from model_3 import Model3
+from mode1_1 import Model1
 
 FEATURE_MODE = 'remote'
 TRAIN_MODE = 'predict'
@@ -16,7 +16,7 @@ TRAIN_MODE = 'predict'
 train_data_list = ['../data/ca/task3_train_5w.txt']
 test_data_list = ['../data/ca/task3_train_test.txt']
 
-model = Model3(learning_rate=0.0001)
+model = Model1(learning_rate=0.0001)
 
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(tf.global_variables())

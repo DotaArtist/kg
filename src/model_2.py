@@ -22,6 +22,7 @@ class Model2(object):
         self.loss_val = self.loss()
         self.train_op = self.train()
         self.accuracy_val = self.accuracy()
+        self.sequence_lengths = tf.placeholder(tf.int32, shape=[None], name="sequence_lengths")
 
     def inference(self):
         with tf.variable_scope('hidden_layer', reuse=tf.AUTO_REUSE):
