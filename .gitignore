@@ -18,3 +18,9 @@ model/
 data/bert_test/
 data/bert_train/
 data/ca/task3_train_100.txt
+!/data/fn/
+data/ca/task3_dev_100.txt
+data/ca/task3_train_5w.txt
+data/right_ca/
+!/data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/event_type_entity_extract_train.csv
+!/data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/event_type_entity_extract_eval.csv
