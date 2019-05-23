@@ -10,6 +10,21 @@ from sklearn.utils import shuffle
 from bert_pre_train import BertPreTrain
 
 
+def get_ner_label(sentence, target):
+    _label = [0 for _ in range(len(sentence))]
+    try:
+        _start = sentence.index(target)
+        _end = _start + len(target)
+
+        _label[_start] = 1
+        _label[_end] = 3
+        _label = [2 if _start < _index < _end else _ for _index, _ in enumerate(_label)]
+
+        return _label
+    except ValueError:
+        return [0 for _ in range(len(sentence))]
+
+
 class DataProcess(object):
     def __init__(self, _show_token=False, mode='remote'):
         self.bert_batch_size = 32
