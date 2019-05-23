@@ -9,30 +9,32 @@ from tqdm import tqdm
 from sklearn.utils import shuffle
 from bert_pre_train import BertPreTrain
 
+MAX_LEN_SENTENCE = 200
+
 
 def get_ner_label(sentence, target):
-    _label = [0 for _ in range(len(sentence))]
+    _label = [[1, 0, 0, 0] for _ in range(MAX_LEN_SENTENCE)]
     try:
         _start = sentence.index(target)
-        _end = _start + len(target)
+        _end = _start + len(target) - 1
 
-        _label[_start] = 1
-        _label[_end] = 3
-        _label = [2 if _start < _index < _end else _ for _index, _ in enumerate(_label)]
+        _label[_start] = [0, 1, 0, 0]
+        _label[_end] = [0, 0, 0, 1]
+        _label = [[0, 0, 1, 0] if _start < _index < _end else _ for _index, _ in enumerate(_label)]
 
         return _label
     except ValueError:
-        return [0 for _ in range(len(sentence))]
+        return [[1, 0, 0, 0] for _ in range(MAX_LEN_SENTENCE)]
 
 
 class DataProcess(object):
-    def __init__(self, _show_token=False, mode='remote'):
+    def __init__(self, _show_token=False, feature_mode='remote'):
         self.bert_batch_size = 32
         self.batch_size = 32
         self.data_path = None
         self.show_token = _show_token
         self.data = None
-        self.bert_model = BertPreTrain(mode=mode)
+        self.bert_model = BertPreTrain(mode=feature_mode)
         self.data_x = None
         self.data_y = None
 
@@ -49,7 +51,12 @@ class DataProcess(object):
             data_tmp = pd.DataFrame()
             with open(i, encoding='utf-8', mode='r') as _f:
                 for line in _f.readlines():
-                    idx, sent, ty, ner = line.strip().strip("\"").split('\",\"')
+                    try:
+                        idx, sent, ty, ner = line.strip().strip("\"").split('\",\"')
+                    except ValueError:
+                        idx, sent, ty = line.strip().strip("\"").split('\",\"')
+                        ner = 'NONE'
+
                     idx_list.append(idx)
                     sent_list.append(sent)
                     type_list.append(ty)
@@ -66,25 +73,18 @@ class DataProcess(object):
             data = shuffle(data)
         self.data = data
 
-    def get_feature(self, mode='train'):
+    def get_feature(self):
         data_x = []
         data_y = []
 
         _sentence_pair_list = []
 
         for index, row in tqdm(self.data.iterrows()):
-            data_y.append([0, 1])
-            # if mode == 'predict':
-            #     data_y.append([0, 1])
-            # elif int(row['label']) == 1:
-            #     data_y.append([0, 1])
-            # elif int(row['label']) == 0:
-            #     data_y.append([1, 0])
-            # else:
-            #     print('error')
-            #     continue
 
-            _sentence_pair = " ||| ".join([str(row['sentence']), str(row['type'])])
+            label = get_ner_label(row['sentence'], row['ner'])
+            data_y.append(label)
+
+            _sentence_pair = " ||| ".join([row['sentence'], row['type']])
             _sentence_pair_list.append(_sentence_pair)
 
             if len(_sentence_pair_list) == 32:
@@ -126,12 +126,10 @@ if __name__ == '__main__':
     data_list = ['../data/fn/event_type_entity_extract_train_100.csv',
                  ]
 
-    a = DataProcess(_show_token=False, mode='remote')
+    a = DataProcess(_show_token=False, feature_mode='remote')
     a.load_data(file_list=data_list)
 
-    # print(a.data)
-    #
-    a.get_feature(mode='predict')
+    a.get_feature()
 
     for x, y in a.next_batch():
-        print(x.dtype, y.shape)
+        print(x.shape, y.shape)
