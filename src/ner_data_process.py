@@ -127,7 +127,7 @@ if __name__ == '__main__':
                  ]
 
     a = DataProcess(_show_token=False, feature_mode='remote')
-    a.load_data(file_list=data_list)
+    a.load_data(file_list=data_list, is_shuffle=False)
 
     a.get_feature()
 
