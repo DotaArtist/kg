@@ -8,7 +8,7 @@ import pandas as pd
 import tensorflow as tf
 from data_process import DataProcess
 from sklearn.metrics import classification_report
-from mode1_1 import Model1
+from ner_model_1 import Model1
 
 FEATURE_MODE = 'remote'
 TRAIN_MODE = 'train'
