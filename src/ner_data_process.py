@@ -9,7 +9,7 @@ from tqdm import tqdm
 from sklearn.utils import shuffle
 from bert_pre_train import BertPreTrain
 
-MAX_LEN_SENTENCE = 200
+MAX_LEN_SENTENCE = 150
 
 
 def get_ner_label(sentence, target):
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     data_list = ['../data/fn/event_type_entity_extract_train_100.csv',
                  ]
 
-    a = DataProcess(_show_token=False, feature_mode='remote')
+    a = DataProcess(_show_token=False, feature_mode='local')
     a.load_data(file_list=data_list, is_shuffle=False)
 
     a.get_feature()

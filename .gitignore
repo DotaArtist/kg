@@ -29,3 +29,6 @@ data/right_ca/
 /data/fn/ccks2019_event_entity_extract/ccks2019_event_entity_extract/
 data/fn/ccks2019_event_entity_extract.zip
 data/fn/ccks2019_event_entity_extract/__MACOSX/
+/src/medical_extract/
+data/medical_record/
+src/medical_extract/

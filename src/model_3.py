@@ -82,18 +82,6 @@ class Model3(object):
             attention_output, _attention_weights = attention(bilstm_layer_output, self.attention_size, "att",
                                                              train_type=self.is_training)
 
-        # with tf.variable_scope('hidden_layer', reuse=tf.AUTO_REUSE):
-        #     weights = tf.get_variable(shape=[self.bert_size, self.fc_hidden_num],
-        #                               initializer=tf.random_normal_initializer(), name="w",
-        #                               trainable=self.is_training)
-        #     biases = tf.get_variable(shape=[self.fc_hidden_num],
-        #                              initializer=tf.random_normal_initializer(), name="b",
-        #                              trainable=self.is_training)
-        #     hidden_layer_output = tf.nn.xw_plus_b(self.input_x, weights, biases)
-        #     hidden_layer_output = tf.nn.relu(hidden_layer_output)
-        #     hidden_layer_output = tf.layers.batch_normalization(hidden_layer_output, training=self.is_training)
-        #     hidden_layer_output = tf.nn.dropout(hidden_layer_output, self.keep_prob)
-
         with tf.variable_scope('fc', reuse=tf.AUTO_REUSE):
             weights = tf.get_variable(shape=[self.bilstm_hidden_num*2, self.num_classes],
                                       initializer=tf.random_normal_initializer(), name="w",
