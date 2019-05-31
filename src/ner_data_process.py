@@ -13,18 +13,18 @@ MAX_LEN_SENTENCE = 150
 
 
 def get_ner_label(sentence, target):
-    _label = [[1, 0, 0, 0] for _ in range(MAX_LEN_SENTENCE)]
+    _label = [0 for _ in range(MAX_LEN_SENTENCE)]
     try:
         _start = sentence.index(target)
         _end = _start + len(target) - 1
 
-        _label[_start] = [0, 1, 0, 0]
-        _label[_end] = [0, 0, 0, 1]
-        _label = [[0, 0, 1, 0] if _start < _index < _end else _ for _index, _ in enumerate(_label)]
+        _label[_start] = 1
+        _label[_end] = 3
+        _label = [2 if _start < _index < _end else _ for _index, _ in enumerate(_label)]
 
         return _label
     except ValueError:
-        return [[1, 0, 0, 0] for _ in range(MAX_LEN_SENTENCE)]
+        return [0 for _ in range(MAX_LEN_SENTENCE)]
 
 
 class DataProcess(object):

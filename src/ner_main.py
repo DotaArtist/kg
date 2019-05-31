@@ -3,6 +3,7 @@
 
 __author__ = 'yp'
 
+import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -10,7 +11,9 @@ from ner_data_process import DataProcess
 from tensorflow.contrib.crf import viterbi_decode
 from ner_model_1 import Model1
 
-FEATURE_MODE = 'local'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+FEATURE_MODE = 'remote'
 TRAIN_MODE = 'train'
 
 train_data_list = ['../data/fn/event_type_entity_extract_train_100.csv']
@@ -60,5 +63,5 @@ if TRAIN_MODE == 'train':
                     viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
                     print(viterbi_seq)
 
-                if step % 1000 == 0:
+                if step % 1 == 0:
                     print("===step:{0} ===loss:{1}".format(step, _loss))

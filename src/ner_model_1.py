@@ -54,7 +54,7 @@ class Model1(object):
             bilstm_layer_output = tf.reshape(bilstm_layer_output, [-1, self.bilstm_hidden_num * 2])
 
             fc_output = tf.nn.xw_plus_b(bilstm_layer_output, weights, biases)
-            logits = tf.reshape(fc_output, [-1, s[1], self.bilstm_hidden_num * 2])
+            logits = tf.reshape(fc_output, [-1, s[1], self.num_tags])
 
         return logits
 
@@ -63,10 +63,6 @@ class Model1(object):
                                                                     tag_indices=self.input_y,
                                                                     sequence_lengths=self.sequence_lengths)
         crf_loss = -tf.reduce_mean(log_likelihood)
-        # losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits,
-        #                                                         labels=self.labels)
-        # mask = tf.sequence_mask(self.sequence_lengths)
-        # losses = tf.boolean_mask(losses, mask)
         return crf_loss
 
     def train(self):
