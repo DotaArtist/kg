@@ -5,6 +5,8 @@ from rdflib import URIRef
 
 g = Graph()
 g.parse("../data/rdf/dsc.nlp-bigdatalab.org.ttl", format="ttl")
+# http://openkg.cn/dataset/symptom-in-chinese
+
 g.bind('ex', URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#'))
 
 qres = g.query("""
