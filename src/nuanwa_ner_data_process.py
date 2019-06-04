@@ -13,14 +13,25 @@ MAX_LEN_SENTENCE = 100
 
 
 def get_ner_label(sentence, target):
+    if len(sentence) > MAX_LEN_SENTENCE:
+        sentence = sentence[:MAX_LEN_SENTENCE]
     _label = [0 for _ in range(MAX_LEN_SENTENCE)]
+    if target == 'NONE':
+        return [0 for _ in range(MAX_LEN_SENTENCE)]
     try:
-        _start = sentence.index(target)
-        _end = _start + len(target) - 1
+        for _target in target.split(','):
+            if len(_target) == 1:
+                pass
+            else:
+                try:
+                    _start = sentence.index(_target)
+                    _end = _start + len(_target) - 1
 
-        _label[_start] = 1
-        _label[_end] = 3
-        _label = [2 if _start < _index < _end else _ for _index, _ in enumerate(_label)]
+                    _label[_start] = 1
+                    _label[_end] = 3
+                    _label = [2 if _start < _index < _end else _ for _index, _ in enumerate(_label)]
+                except IndexError:
+                    print(sentence)
 
         return _label
     except ValueError:
@@ -45,26 +56,23 @@ class DataProcess(object):
 
             idx_list = []
             sent_list = []
-            type_list = []
             ner_list = []
 
             data_tmp = pd.DataFrame()
             with open(i, encoding='utf-8', mode='r') as _f:
                 for line in _f.readlines():
                     try:
-                        idx, sent, ty, ner = line.strip().strip("\"").split('\",\"')
+                        idx, sent, ner = line.strip().strip("\n").split('\t')
                     except ValueError:
-                        idx, sent, ty = line.strip().strip("\"").split('\",\"')
+                        idx, sent = line.strip().strip("\n").split('\t')
                         ner = 'NONE'
 
                     idx_list.append(idx)
                     sent_list.append(sent)
-                    type_list.append(ty)
                     ner_list.append(ner)
 
             data_tmp['idx'] = pd.Series(idx_list)
             data_tmp['sentence'] = pd.Series(sent_list)
-            data_tmp['type'] = pd.Series(type_list)
             data_tmp['ner'] = pd.Series(ner_list)
 
             data = pd.concat([data, data_tmp])
@@ -84,7 +92,7 @@ class DataProcess(object):
             label = get_ner_label(row['sentence'], row['ner'])
             data_y.append(label)
 
-            _sentence_pair = " ||| ".join([row['sentence'], row['type']])
+            _sentence_pair = row['sentence']
             _sentence_pair_list.append(_sentence_pair)
 
             if len(_sentence_pair_list) == 32:
@@ -125,13 +133,14 @@ class DataProcess(object):
 if __name__ == '__main__':
     data_list = [
         # '../data/fn/event_type_entity_extract_train_100.csv',
-        '../data/medical_record/train.txt'
+        '../data/medical_record/train_1.txt'
     ]
 
-    a = DataProcess(_show_token=False, feature_mode='local')
+    a = DataProcess(_show_token=False, feature_mode='remote')
     a.load_data(file_list=data_list, is_shuffle=False)
 
     a.get_feature()
 
     for x, y in a.next_batch():
         print(x.shape, y.shape)
+        print(y)
