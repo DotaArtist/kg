@@ -14,7 +14,16 @@ g.bind('skos', URIRef('http://www.w3.org/2004/02/skos/core#'))
 g.bind('xsd', URIRef('http://www.w3.org/2001/XMLSchema#'))
 
 # qres = g.query("""SELECT ?x WHERE { ?x rdfs:subClassOf* owl:症状. }""")
-qres = g.query("""SELECT ?x WHERE { ?x rdfs:label* .}""")
+qres = g.query("""SELECT ?Class  (COUNT(?friend) AS ?count){
+    ?x rdfs:Class rdf:type ? type.
+}""")
 
 for row in qres:
     print(row)
+
+
+SELECT ?name (COUNT(?friend) AS ?count)
+WHERE {
+    ?person foaf:name ?name .
+    ?person foaf:knows ?friend .
+} GROUP BY ?person ?name
