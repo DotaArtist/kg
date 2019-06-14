@@ -7,19 +7,22 @@ import os
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-from nuanwa_ner_data_process import DataProcess
+from nuanwa_ner_data_process_v2 import DataProcess
 from tensorflow.contrib.crf import viterbi_decode
 from ner_model_1 import Model1
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 FEATURE_MODE = 'remote'
-TRAIN_MODE = 'train'
+TRAIN_MODE = 'demo'
 
-train_data_list = ['../data/medical_record/train_3w.txt']
-test_data_list = ['../data/medical_record/test_5k.txt']
+# train_data_list = ['../data/medical_record/train_3w.txt']
+# test_data_list = ['../data/medical_record/test_5k.txt']
 
-model = Model1(learning_rate=0.0001, sequence_length_val=100)
+train_data_list = ['../data/medical_record/normal_train/test_497.txt']
+test_data_list = ['../data/medical_record/normal_train/test_497.txt']
+
+model = Model1(learning_rate=0.0001, sequence_length_val=100, num_tags=15)
 
 init = tf.global_variables_initializer()
 saver = tf.train.Saver(tf.global_variables())
@@ -70,7 +73,7 @@ if TRAIN_MODE == 'train':
                         right_counter += 1
                     sum_counter += 1
 
-                if step % 500 == 0:
+                if step % 10 == 0:
                     print("step:{0} ===loss:{1}".format(step, _loss))
 
             save_path = saver.save(sess, "../model/%s/model_epoch_%s" % (str(i), str(i)))
@@ -89,7 +92,7 @@ if TRAIN_MODE == 'train':
                                                       {model.input_x: batch_x,
                                                        model.input_y: batch_y,
                                                        model.sequence_lengths: _seq_len,
-                                                       model.keep_prob: 0.8})
+                                                       model.keep_prob: 1.0})
                 for logit, seq_len, _y_label in zip(_logits, _seq_len, batch_y):
                     viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
 
@@ -97,33 +100,32 @@ if TRAIN_MODE == 'train':
                         right_counter += 1
                     sum_counter += 1
 
-            print("======acc rate: {}".format(str(right_counter / sum_counter)))
+            print("epoch: {}======acc rate: {}".format(str(i), str(right_counter / sum_counter)))
 
 if TRAIN_MODE == 'demo':
-    predict_data_list = ['../data/medical_record/train_3w.txt']
-
     predict_data_process = DataProcess(feature_mode=FEATURE_MODE)
-    predict_data_process.load_data(file_list=predict_data_list)
-    predict_data_process.get_feature()
 
     with tf.Session(config=config) as sess:
         saver = tf.train.Saver()
-        saver.restore(sess, "../model/19/model_epoch_19")
+        saver.restore(sess, "../model/35/model_epoch_35")
 
-        y_predict_list = []
-        for batch_x, batch_y in predict_data_process.next_batch():
+        sentence_str = ""
+
+        while sentence_str != 'q':
+            sentence_str = input("input:")
+            batch_x, batch_y = predict_data_process.get_one_sentence_feature(sentence_str)
             model.is_training = False
             _seq_len = np.array([len(_) for _ in batch_x])
-            _logits, transition_params = sess.run([model.logits,
-                                                   model.transition_params],
-                                                  feed_dict={model.input_x: batch_x,
-                                                             model.sequence_lengths: _seq_len,
-                                                             model.keep_prob: 1.0})
+            _logits, _loss, transition_params, decode_tags = sess.run([model.logits,
+                                                                       model.loss_val,
+                                                                       model.transition_params,
+                                                                       model.decode_tags],
+                                                                      feed_dict={model.input_x: batch_x,
+                                                                                 model.input_y: batch_y,
+                                                                                 model.sequence_lengths: _seq_len,
+                                                                                 model.keep_prob: 1.0})
 
-            for logit, seq_len in zip(_logits, _seq_len):
+            for logit, seq_len, _decode_tags in zip(_logits, _seq_len, decode_tags):
                 viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
-                y_predict_list.append(viterbi_seq)
-
-        _out_file = predict_data_process.data
-        _out_file['y_pred'] = pd.Series(y_predict_list)
-        _out_file.to_csv('./final_predict.tsv', sep='\t')
+                print(viterbi_seq)
+                print(_decode_tags)

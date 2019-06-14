@@ -56,8 +56,8 @@ def process_data(_path):
             for _ in _time:
                 try:
                     _example['entities'].append(get_ner(_sent=line, _tar=_, _label='duration'))
-                    _example['entities'].append(get_ner(_sent=line, _tar=_, _label='start_time'))
-                    _example['entities'].append(get_ner(_sent=line, _tar=_, _label='end_time'))
+                    # _example['entities'].append(get_ner(_sent=line, _tar=_, _label='start_time'))
+                    # _example['entities'].append(get_ner(_sent=line, _tar=_, _label='end_time'))
                 except:
                     print(_)
             out_json['rasa_nlu_data']['common_examples'].append(_example)
@@ -66,10 +66,12 @@ def process_data(_path):
 
 # split -l 500 -d -a 2 nuanwa_ner_test.txt unlabel_ner_test_
 if __name__ == '__main__':
-    import os
+    process_data('C:/Users/YP_TR/Desktop/数据标注/data_v2/02/unlabel_ner_02_19')
 
-    _path = 'C:/Users/YP_TR/Desktop/数据标注/data_v2/05/'
-    file_list = os.listdir(_path)
-
-    for i in file_list:
-        process_data(_path + i)
+    # import os
+    #
+    # _path = 'C:/Users/YP_TR/Desktop/数据标注/data_v2/05/'
+    # file_list = os.listdir(_path)
+    #
+    # for i in file_list:
+    #     process_data(_path + i)
