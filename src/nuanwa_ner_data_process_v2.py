@@ -18,11 +18,11 @@ ner_label_map = {
     'other': 0,
     'disease': 1, 'disease_i': 2,
     'symptom': 3, 'symptom_i': 4,
-    'drug': 5, 'drug_i': 6,
-    'diagnosis': 7, 'diagnosis_i': 8,
-    'duration': 9, 'duration_i': 10,
-    'start_time': 11, 'start_time_i': 12,
-    'end_time': 13, 'end_time_i': 14
+    'drug': 0, 'drug_i': 0,
+    'diagnosis': 0, 'diagnosis_i': 0,
+    'duration': 0, 'duration_i': 0,
+    'start_time': 0, 'start_time_i': 0,
+    'end_time': 0, 'end_time_i': 0
 }
 
 
@@ -38,7 +38,7 @@ def get_disease_from_tag(sentence, tag, target=[1, 2]):
         if index in target:
             counter = 1
             out.append(word)
-    print(''.join(out))
+    return ''.join(out).split(',')
 
 
 def get_ner_label(sentence, target):
@@ -52,6 +52,7 @@ def get_ner_label(sentence, target):
 
     target_list = target.split('&&')
     for _target in target_list:
+        # print(_target)
         _key, _value = _target.split('@@')
 
         for m in re.finditer(_value, sentence):
@@ -166,21 +167,21 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
-    # data_list = [
-    #     '../data/fn/event_type_entity_extract_train_100.csv',
-        # '../data/medical_record/normal_train/100.txt'
-    # ]
-    #
-    # a = DataProcess(_show_token=False, feature_mode='remote')
-    # a.load_data(file_list=data_list, is_shuffle=False)
-    #
-    # a.get_feature()
-    #
-    # for x, y in a.next_batch():
-    #     print(x.shape, y.shape)
-    #     print(y)
-    #
+    # test()
+    data_list = [
+        # '../data/fn/event_type_entity_extract_train_100.csv',
+        '../data/medical_record/normal_train/shuf.txt'
+    ]
+
+    a = DataProcess(_show_token=False, feature_mode='remote')
+    a.load_data(file_list=data_list, is_shuffle=False)
+
+    a.get_feature()
+
+    for x, y in a.next_batch():
+        print(x.shape, y.shape)
+        print(y)
+
     # x, y = a.get_one_sentence_feature('今天天气很好')
     # print(x.shape, y.shape)
     # print(y)

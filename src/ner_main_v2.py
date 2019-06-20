@@ -11,6 +11,7 @@ from nuanwa_ner_data_process_v2 import *
 from tensorflow.contrib.crf import viterbi_decode
 from ner_model_3 import Model3
 
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 FEATURE_MODE = 'local'
@@ -25,7 +26,7 @@ test_data_list = ['../data/medical_record/normal_train/100.txt']
 model = Model3(learning_rate=0.0001, sequence_length_val=100, num_tags=15)
 
 init = tf.global_variables_initializer()
-saver = tf.train.Saver(tf.global_variables())
+saver = tf.train.Saver(tf.global_variables(), max_to_keep=20)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -93,13 +94,11 @@ if TRAIN_MODE == 'train':
             print("epoch: {}======acc rate: {}".format(str(i), str(right_counter / sum_counter)))
 
 if TRAIN_MODE == 'demo':
-    predict_data_list = ['../data/medical_record/train_3w.txt']
-
     predict_data_process = DataProcess(feature_mode=FEATURE_MODE)
 
     with tf.Session(config=config) as sess:
         saver = tf.train.Saver()
-        saver.restore(sess, "../model/19/model_epoch_30")
+        saver.restore(sess, "../model/30/model_epoch_30")
 
         sentence_str = ""
 
@@ -119,3 +118,4 @@ if TRAIN_MODE == 'demo':
                 viterbi_seq, _ = viterbi_decode(logit[:seq_len], transition_params)
                 out = get_disease_from_tag(sentence=sentence_str, tag=viterbi_seq, target=[1, 2])
                 print('disease: {}'.format(out))
+

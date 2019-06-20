@@ -279,6 +279,6 @@ def get_train_data():
 
 
 if __name__ == "__main__":
-    # main()
-    test()
+    main()
+    # test()
     # get_train_data()

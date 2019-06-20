@@ -20,10 +20,3 @@ qres = g.query("""SELECT ?Class  (COUNT(?friend) AS ?count){
 
 for row in qres:
     print(row)
-
-
-SELECT ?name (COUNT(?friend) AS ?count)
-WHERE {
-    ?person foaf:name ?name .
-    ?person foaf:knows ?friend .
-} GROUP BY ?person ?name

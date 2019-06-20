@@ -15,6 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 FEATURE_MODE = 'remote'
 TRAIN_MODE = 'demo'
+model_dir = 'model_0617'
 
 # train_data_list = ['../data/medical_record/train_3w.txt']
 # test_data_list = ['../data/medical_record/test_5k.txt']
@@ -76,7 +77,7 @@ if TRAIN_MODE == 'train':
                 if step % 10 == 0:
                     print("step:{0} ===loss:{1}".format(step, _loss))
 
-            save_path = saver.save(sess, "../model/%s/model_epoch_%s" % (str(i), str(i)))
+            save_path = saver.save(sess, "../%s/%s/model_epoch_%s" % (model_dir, str(i), str(i)))
 
             # test
             y_predict_list = []
@@ -107,7 +108,7 @@ if TRAIN_MODE == 'demo':
 
     with tf.Session(config=config) as sess:
         saver = tf.train.Saver()
-        saver.restore(sess, "../model/35/model_epoch_35")
+        saver.restore(sess, "../%s/35/model_epoch_35".format(model_dir))
 
         sentence_str = ""
 
