@@ -107,6 +107,18 @@ def delete_all_number(func):
     return wrapper
 
 
+def delete_short(func):
+    def wrapper(*args, **kw):
+        _output = []
+        _list = func(*args, **kw)
+
+        for _words in _list:
+            if len(_words) > 2:
+                _output.append(_words)
+        return _output
+    return wrapper
+
+
 def delete_deny(func):
     def wrapper(*args, **kw):
         _list = func(*args, **kw)

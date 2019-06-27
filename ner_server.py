@@ -37,10 +37,12 @@ def main():
                         drug_out.extend(f['drug'])
                         diag_out.extend(f['diag'])
 
+            diag_out = list(set(diag_out))
+
             return json.dumps({'disease': list(set(dise_out)),
                                'sympton': list(set(symp_out)),
                                'drug': list(set(drug_out)),
-                               'operation': list(set(diag_out))})
+                               'operation': [i for i in diag_out if len(i) > 2]})
 
 
 if __name__ == "__main__":
