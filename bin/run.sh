@@ -27,3 +27,9 @@ bert-serving-start -show_tokens_to_client $true -port 5555 -port_out 5556 -pooli
 bert-serving-start -port 5555 -port_out 5556 -pooling_strategy NONE -max_seq_len 100 -model_dir ./chinese_L-12_H-768_A-12/ -num_worker=1
 
 #
+ner_main.py
+ner_main_online.py
+ner_main_client.py
+ner_server.py
+rule_server.py
+server.py

@@ -143,6 +143,11 @@ def extract_drug(_drug, _drug_extractor):
 
 
 @delete_same
+def extract_operation(_operation, _operation_extractor):
+    return _operation_extractor.extract_keywords(number_to_chinese(_operation))
+
+
+@delete_same
 @delete_deny
 def extract_disease(_disease, _disease_extractor):
     return _disease_extractor.extract_keywords(number_to_chinese(_disease))
@@ -237,13 +242,15 @@ def main():
 
 
 def test():
+    str_a = "尿液分析+沉渣定量 妇科常规检查Qd×1天 会阴冲洗(含扩阴器)1Qd×1天 阴道分泌物常规 细菌性阴道病检查 HPV核酸分型检测 妇科TCT 硝呋太尔片[0.2g*20片]0.4g口服Tid×6天 经带宁胶囊[0.3g*36粒]4粒口服Tid×5天 聚维酮碘溶液[20g:200ml]20g外用Qd×1天 甲硝唑阴道凝胶[5g/支]（尼美欣）5g阴道给药Qd×4天 随诊"
+
     symptom_extractor = load_config(config.pattern_symptom)
     drug_extractor = load_config(config.pattern_drug)
     disease_extractor = load_disease_config(_config_path=config.pattern_disease, _c_name_path=config.pattern_disease_cname)
 
-    print(extract_symptom(_symptom='外伤后头痛发热', _symptom_extractor=symptom_extractor))
-    # print(extract_drug('外伤后头痛3天', drug_extractor))
-    print(extract_disease(_disease='外伤后头痛3天', _disease_extractor=disease_extractor))
+    print(extract_symptom(_symptom=str_a, _symptom_extractor=symptom_extractor))
+    print(extract_drug(str_a, drug_extractor))
+    print(extract_disease(_disease=str_a, _disease_extractor=disease_extractor))
 
     @delete_same
     def f():
@@ -279,6 +286,6 @@ def get_train_data():
 
 
 if __name__ == "__main__":
-    main()
-    # test()
+    # main()
+    test()
     # get_train_data()

@@ -14,6 +14,7 @@ pattern_check = "../../data/medical_record/config/check_combine.csv"
 # pattern_disease = "../../data/medical_record/config/disease_combine_all.csv"
 pattern_disease = "../../data/medical_record/config/idc_disease.csv"
 pattern_disease_cname = "../../data/medical_record/config/disease_cname.csv"
+pattern_operation = "../../data/medical_record/config/operation.csv"
 
 health_insurance_tag = "../../data/medical_record/config/health_insurance_tag_deliver.csv"
 tag_disease_detail = "../../data/medical_record/config/众安保险-诊断主编码-核赔(诊断)标签条目.csv"
