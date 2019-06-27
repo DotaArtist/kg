@@ -9,11 +9,12 @@ def get_disease(sentence_1):
     data = dict()
     data["sentence"] = sentence_1.replace(' ', '')
     data["Content-Type"] = "application/json"
-    r = requests.post("http://192.168.236.14:1086", json=data)
+    r = requests.post("http://192.168.15.71:1086", json=data)
 
     dise_out = r.json()['dise'][0]
     symp_out = r.json()['symp'][0]
     drug_out = r.json()['drug'][0]
+    diag_out = r.json()['diag'][0]
 
     dise_output = []
     re_words = re.compile(u"[\u4e00-\u9fa5]+")
@@ -33,10 +34,17 @@ def get_disease(sentence_1):
         res = re.findall(re_words, i)
         drug_output.extend([_ for _ in res if len(_) > 1])
 
+    diag_output = []
+    re_words = re.compile(u"[\u4e00-\u9fa5]+")
+    for i in diag_out:
+        res = re.findall(re_words, i)
+        diag_output.extend([_ for _ in res if len(_) > 1])
+
     out_dict = dict()
     out_dict['dise'] = dise_output
     out_dict['symp'] = symp_output
     out_dict['drug'] = drug_output
+    out_dict['diag'] = diag_output
 
     return out_dict
 
@@ -179,26 +187,26 @@ def merge_medical():
 
 
 if __name__ == '__main__':
-    # str_a = '患者于入院1个月前于劳累时发作胸痛，疼痛位于胸骨后，手掌大小面积，为压迫样疼痛，无出汗，疼痛无放散，疼痛发作约3－5分钟可自行好转，未在意。上述症状反复发作，多于活动时发生，发作时含服硝酸甘油后1－2分钟可好转，未住院系统治疗。此次患者于入院1周前无明显诱因再发胸痛，疼痛部位性质同前，疼痛较剧烈，伴出汗，向后背部放散，发作约10分钟可逐渐好转，上述症状反复发作，今为求系统诊治就诊于我院门诊，心电图示心肌缺血，门诊以“冠心病，心绞痛”为诊断收入院治疗。病来无发热，无咳嗽，无咳痰，无咯血，无腹痛腹泻，无恶心呕吐，无头痛，无晕厥抽搐，体重无明显减轻，饮食睡眠尚可，二便正常。'
-    # b = segment_content(str_a)
-    # out = []
-    # out_1 = []
-    # for _ in b:
-    #     c = segment_sentence(_)
-    #     for d in c:
-    #         if d != '':
-    #             print('原句：', d)
-    #             f = get_disease(d)
-    #             print('预抽取疾病：', f['dise'])
-    #             print('预抽取症状：', f['symp'])
-    #             out.extend(f['dise'])
-    #             out_1.extend(f['symp'])
-    # print(list(set(out)))
-    # print(list(set(out_1)))
+    str_a = '患者于入院1个月前于劳累时发作胸痛，疼痛位于胸骨后，手掌大小面积，为压迫样疼痛，无出汗，疼痛无放散，疼痛发作约3－5分钟可自行好转，未在意。上述症状反复发作，多于活动时发生，发作时含服硝酸甘油后1－2分钟可好转，未住院系统治疗。此次患者于入院1周前无明显诱因再发胸痛，疼痛部位性质同前，疼痛较剧烈，伴出汗，向后背部放散，发作约10分钟可逐渐好转，上述症状反复发作，今为求系统诊治就诊于我院门诊，心电图示心肌缺血，门诊以“冠心病，心绞痛”为诊断收入院治疗。病来无发热，无咳嗽，无咳痰，无咯血，无腹痛腹泻，无恶心呕吐，无头痛，无晕厥抽搐，体重无明显减轻，饮食睡眠尚可，二便正常。'
+    b = segment_content(str_a)
+    out = []
+    out_1 = []
+    for _ in b:
+        c = segment_sentence(_)
+        for d in c:
+            if d != '':
+                print('原句：', d)
+                f = get_disease(d)
+                print('预抽取疾病：', f['dise'])
+                print('预抽取症状：', f['symp'])
+                out.extend(f['dise'])
+                out_1.extend(f['symp'])
+    print(list(set(out)))
+    print(list(set(out_1)))
 
     # a = get_disease('予查MRI示皮下囊肿，患者口述，具体报告未见，未予药物治疗，一周后消肿如常。')
     # print(a)
     # print(segment_sentence('反复胸骨后隐痛不适伴中上腹不适2周，无反酸，无嗳气，有烧心，大便正常'))
     # main()
 
-    merge_medical()
+    # merge_medical()

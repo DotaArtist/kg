@@ -3,8 +3,8 @@
 import json
 import codecs
 
-path = 'C:/Users/YP_TR/Desktop/数据标注/已标注数据/已标注_unlabel_ner_02_11.json'
-out_path = 'C:/Users/YP_TR/Desktop/数据标注/标准训练数据/11.txt'
+path = 'C:/Users/YP_TR/Desktop/数据标注/已标注数据/已标注_unlabel_ner_02_19.json'
+out_path = 'C:/Users/YP_TR/Desktop/数据标注/标准训练数据/19.txt'
 
 data = json.load(codecs.open(path, mode='r', encoding='utf-8-sig'))
 example_items = data['rasa_nlu_data']['common_examples']
