@@ -116,6 +116,7 @@ def delete_short(func):
             if len(_words) > 2:
                 _output.append(_words)
         return _output
+
     return wrapper
 
 
@@ -134,7 +135,7 @@ def delete_deny(func):
         for _ in _list:
             try:
                 _location = _sentence.index(_)
-                if _sentence[_location-1] != '无':
+                if _sentence[_location - 1] != '无':
                     _list_no_deny.append(_)
             except ValueError:
                 print(_sentence, _)
@@ -170,7 +171,7 @@ def extract_time(_time):
     output = []
     for _str in re.split('[，。,;；]', _time):
         _str = chinese_to_number(_str)
-        new_pattern = '([0-9]{1,4}年[0-9]{1,2}月[0-9]{1,2}日)|([0-9-数多]{1,4}[\u4e00-\u9fa5]*?[时日天年周月分][余钟前]{0,1})'
+        new_pattern = '([0-9]{1,4}[年\\-\\/][0-9]{1,2}[月\\-\\/][0-9]{1,2}[日\\-\\/]{0,1})|([0-9-数多]{1,4}[\u4e00-\u9fa5]*?[时日天年周月分][余钟前]{0,1})'
         _output = re.findall(new_pattern, _str)
 
         _output = [_[1] if _[0] == '' else _[0] for _ in _output]

@@ -15,9 +15,11 @@ class SentenceParse(object):
         for _sentence in re.split('[。.\n]', self.sentence.strip('。.\n')):
             print("=========")
             print(_sentence)
-            print(self.model.pos_tag(_sentence))
-            # print(self.model.parse(_sentence))
-            # print(self.model.dependency_parse(_sentence))
+            # print(self.model.pos_tag(_sentence))
+            _ = self.model.parse(_sentence)  # 依存句法分析 DP
+            print(_.replace('\t', '').replace('\r\n', ''))
+            print(type(_))
+            # print(self.model.dependency_parse(_sentence))  # 语义依存关系 SDP
 
     def exit(self):
         self.model.close()
@@ -25,7 +27,8 @@ class SentenceParse(object):
 
 if __name__ == '__main__':
     model = SentenceParse()
-    sent_1 = '良性反应性改变(轻度炎症)'
+    sent_1 = '乳酸脱氢酶测定试剂盒ldh速率法'
+    # sent_1 = '中华人民共和国(中国)很强大'
     model.parse(sentence=sent_1)
     model.exit()
 

@@ -28,6 +28,7 @@ def main():
             dise_out = a['disease']
             symp_out = b['sympton']
             drug_out = a['drug']
+            b['operation'].extend(a['operation'])
             diag_out = b['operation']
 
             return json.dumps({'disease': list(set(dise_out)),
