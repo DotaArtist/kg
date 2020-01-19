@@ -6,3 +6,5 @@
 
 ### 解析结果
 ![解析结果](./image/病历结构化-健康险版本-解析结果v1.0.jpg)
+### reference
+- https://dotaartist.github.io/2020/01/19/%E7%97%85%E5%8E%86%E6%91%98%E8%A6%81%E6%BC%94%E7%A4%BA%E7%B3%BB%E7%BB%9F/
